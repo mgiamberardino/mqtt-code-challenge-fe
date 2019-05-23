@@ -1,44 +1,65 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## IoT Full Stack Challenge
 
-## Available Scripts
+### Device Script
 
-In the project directory, you can run:
+In order to run the device simulation script you need to have a mosquitto instance running and if it's different from `localhost` you need to set the `MQTT_HOST`env variable with the right host. To run the script use:
+```
+npm run start-devices
+```
 
-### `npm start`
+### React App
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+In order to run the React app jusr use:
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+```
+npm start
+```
 
-### `npm test`
+## IoT: React app
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Create a Web App that displays a list of vehicles with information updated real-time.
+Vehicles have a tracking device that reports the following status data:
 
-### `npm run build`
+```ts
+{
+ id: number       // unique identifier, 0-based integer number
+ name: string     // random string
+ location: string // comma-separated coordinates as -34.573535,-58.447260
+ speed: number    // in km/h
+ power: 'on' | 'off'  // indicates engine power status
+ locked: boolean      // indicates doors are locked
+}
+```
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Back-end
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+Setup a local broker using _mosquitto_. No authentication needed. Make sure clients can establish a connection using the MQTT client + Websockets.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Create a script that simulates 10 devices. Every device will be assigned a unique `id` and it will be used for MQTT topics. Eg: `device/{id}/{channel}`
 
-### `npm run eject`
+After starting the script, the devices should start reporting random data every 5 seconds for fields `location` and `speed`. Publish to topic `device/{id}/status` with retained payload `{ id, name, location, speed, power, locked }`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Devices can also be controlled remotely, so they should subscribe to topic `device/{id}/cmd` and support the following commands:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- `POWER` - to power on/off the engine
+- `LOCK` - to lock/unlock the doors
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Commands toggle the last known status.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Front-end
 
-## Learn More
+- Connect to the broker and subscribe to status topics for all devices. Eg: `device/1/status`.
+- Display all the reported fields in a table-like layout.
+- Update data in real-time.
+- Add POWER and LOCK buttons so the user can control every vehicle.
+- Highlight vehicles that are powered off
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## You should stick to the following tech stack:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Javascript (Typescript is considered a plus)
+- Node.js
+- React + JSX + Hooks
+
+Any other language, technology, library, module, framework or persistence solution is _optional_.
+
+Please share your code on Github with instructions on how to build and run the app. Deploy to Heroku if possible.

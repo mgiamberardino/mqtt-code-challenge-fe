@@ -44,7 +44,6 @@ function useDevice(id: number): Device {
   useEffect(() => {
     mqttConnector.subscribe(topic);
     function handleMessage(messageTopic: string, message: Buffer) {
-      console.log(message.toString());
       if (messageTopic === topic) {
         setDevice(JSON.parse(message.toString()));
       }
